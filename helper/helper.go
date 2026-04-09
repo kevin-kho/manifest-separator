@@ -13,7 +13,7 @@ func SeparateManifests(data []byte) []models.ManifestByte {
 	var curr []byte
 
 	for row := range bytes.SplitSeq(data, []byte{'\n'}) {
-		if slices.Equal(row, []byte("---")) {
+		if slices.Equal(row, []byte("---")) && len(curr) > 0 {
 			res = append(res, curr)
 			curr = []byte{}
 			continue
