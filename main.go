@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"manifest-seperator/export"
 	"manifest-seperator/helper"
@@ -39,6 +38,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	var cmds []string
+
+	// TODO: split into two loops?
 	for _, mb := range manifestBytes {
 
 		err := export.WriteManifestToFile(mb)
@@ -51,8 +53,13 @@ func main() {
 			log.Fatal(err)
 		}
 
-		fmt.Println(cmd)
+		cmds = append(cmds, cmd)
 
+	}
+
+	err = export.WriteDiffCmdFile(cmds)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 }

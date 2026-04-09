@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"manifest-seperator/models"
 	"os"
+	"strings"
 )
 
 func RemoveAllKindDir() error {
@@ -60,5 +61,18 @@ func GetKubectlDiffCmd(mb models.ManifestByte) (string, error) {
 	cmd = fmt.Sprintf("kubectl diff -f %v", filePath)
 
 	return cmd, nil
+
+}
+
+func WriteDiffCmdFile(cmds []string) error {
+
+	concat := strings.Join(cmds, "\n")
+
+	err := os.WriteFile("out/diff-cmds.txt", []byte(concat), 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 
 }
