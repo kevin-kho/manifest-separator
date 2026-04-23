@@ -33,7 +33,7 @@ type ManifestByte []byte
 func (mb ManifestByte) IsValidManifest() bool {
 	var empty Manifest
 
-	mani, err := mb.MarshalToManifest()
+	mani, err := mb.UnmarshalManifest()
 	if err != nil {
 		return false // TODO: should it return error?
 	}
@@ -41,7 +41,7 @@ func (mb ManifestByte) IsValidManifest() bool {
 	return mani != empty
 }
 
-func (mb ManifestByte) MarshalToManifest() (Manifest, error) {
+func (mb ManifestByte) UnmarshalManifest() (Manifest, error) {
 	var m Manifest
 	err := yaml.Unmarshal(mb, &m)
 	if err != nil {

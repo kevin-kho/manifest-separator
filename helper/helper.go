@@ -36,7 +36,7 @@ func GetKinds(mb []models.ManifestByte) (map[string]bool, error) {
 
 	res := make(map[string]bool)
 	for _, m := range mb {
-		mani, err := m.MarshalToManifest()
+		mani, err := m.UnmarshalManifest()
 		if err != nil {
 			return res, err
 		}
