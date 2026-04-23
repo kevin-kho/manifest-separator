@@ -26,7 +26,22 @@ type Metadata struct {
 
 type ManifestByte []byte
 
-func (mb ManifestByte) MarshlToManifest() (Manifest, error) {
+// Covers the scenario where there's nothing inbetween --- ex:
+// ---
+// # Source: cni/templates/clusterrolebinding.yaml
+// ---
+func (mb ManifestByte) IsValidManifest() bool {
+	var empty Manifest
+
+	mani, err := mb.MarshalToManifest()
+	if err != nil {
+		return false // TODO: should it return error?
+	}
+
+	return mani != empty
+}
+
+func (mb ManifestByte) MarshalToManifest() (Manifest, error) {
 	var m Manifest
 	err := yaml.Unmarshal(mb, &m)
 	if err != nil {

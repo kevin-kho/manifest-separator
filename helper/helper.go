@@ -10,11 +10,13 @@ func SeparateManifests(data []byte) []models.ManifestByte {
 
 	var res []models.ManifestByte
 
-	var curr []byte
+	var curr models.ManifestByte
 
 	for row := range bytes.SplitSeq(data, []byte{'\n'}) {
 		if slices.Equal(row, []byte("---")) && len(curr) > 0 {
-			res = append(res, curr)
+			if curr.IsValidManifest() {
+				res = append(res, curr)
+			}
 			curr = []byte{}
 			continue
 		}
@@ -23,7 +25,7 @@ func SeparateManifests(data []byte) []models.ManifestByte {
 	}
 
 	curr = bytes.TrimSpace(curr)
-	if len(curr) > 0 {
+	if len(curr) > 0 && curr.IsValidManifest() {
 		res = append(res, curr)
 	}
 
@@ -34,7 +36,7 @@ func GetKinds(mb []models.ManifestByte) (map[string]bool, error) {
 
 	res := make(map[string]bool)
 	for _, m := range mb {
-		mani, err := m.MarshlToManifest()
+		mani, err := m.MarshalToManifest()
 		if err != nil {
 			return res, err
 		}

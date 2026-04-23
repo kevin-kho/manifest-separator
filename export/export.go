@@ -30,7 +30,7 @@ func CreateKindDir(kinds map[string]bool) error {
 
 func WriteManifestToFile(mb models.ManifestByte) error {
 
-	m, err := mb.MarshlToManifest()
+	m, err := mb.MarshalToManifest()
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func GetKubectlDiffCmd(mb models.ManifestByte) (string, error) {
 
 	var cmd string
 
-	m, err := mb.MarshlToManifest()
+	m, err := mb.MarshalToManifest()
 	if err != nil {
 		return cmd, err
 	}
