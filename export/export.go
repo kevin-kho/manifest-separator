@@ -46,6 +46,7 @@ func WriteManifestToFile(mb models.ManifestByte) error {
 
 }
 
+// TODO: combine into one or extract commong logic
 func GetKubectlDiffCmd(mb models.ManifestByte) (string, error) {
 
 	var cmd string
@@ -82,6 +83,7 @@ func GetKubectlGetCmd(mb models.ManifestByte) (string, error) {
 
 }
 
+// TODO: combine into one or extract commong logic
 func WriteDiffCmdFile(cmds []string) error {
 
 	concat := strings.Join(cmds, "\n")
