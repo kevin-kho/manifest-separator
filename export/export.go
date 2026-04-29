@@ -64,11 +64,41 @@ func GetKubectlDiffCmd(mb models.ManifestByte) (string, error) {
 
 }
 
+func GetKubectlGetCmd(mb models.ManifestByte) (string, error) {
+
+	var cmd string
+
+	m, err := mb.UnmarshalManifest()
+	if err != nil {
+		return cmd, err
+	}
+
+	fileName := m.GetFileName()
+	filePath := fmt.Sprintf("out/%v/%v", m.Kind, fileName)
+
+	cmd = fmt.Sprintf("kubectl get -f %v -oyaml", filePath)
+
+	return cmd, nil
+
+}
+
 func WriteDiffCmdFile(cmds []string) error {
 
 	concat := strings.Join(cmds, "\n")
 
 	err := os.WriteFile("out/diff-cmds.txt", []byte(concat), 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func WriteGetCmdFile(cmds []string) error {
+	concat := strings.Join(cmds, "\n")
+
+	err := os.WriteFile("out/get-cmds.txt", []byte(concat), 0644)
 	if err != nil {
 		return err
 	}
