@@ -46,10 +46,19 @@ func WriteManifestToFile(mb models.ManifestByte) error {
 
 }
 
-// TODO: combine into one or extract commong logic
-func GetKubectlDiffCmd(mb models.ManifestByte) (string, error) {
+func GetCmd(mb models.ManifestByte, cmdType string) (string, error) {
+	// TODO: make cmdType an enum?
 
 	var cmd string
+	cmdString := map[string]string{
+		"get":  "kubectl get -f %v -oyaml",
+		"diff": "kubectl diff -f %v",
+	}
+
+	cmdStr := cmdString[cmdType]
+	if cmdStr == "" {
+		return cmd, fmt.Errorf("Unknown cmdType: %v", cmdType)
+	}
 
 	m, err := mb.UnmarshalManifest()
 	if err != nil {
@@ -57,27 +66,9 @@ func GetKubectlDiffCmd(mb models.ManifestByte) (string, error) {
 	}
 
 	fileName := m.GetFileName()
-	filePath := fmt.Sprintf("out/%v/%v", m.Kind, fileName)
+	filePath := fmt.Sprintf(cmdStr, m.Kind, fileName)
 
-	cmd = fmt.Sprintf("kubectl diff -f %v", filePath)
-
-	return cmd, nil
-
-}
-
-func GetKubectlGetCmd(mb models.ManifestByte) (string, error) {
-
-	var cmd string
-
-	m, err := mb.UnmarshalManifest()
-	if err != nil {
-		return cmd, err
-	}
-
-	fileName := m.GetFileName()
-	filePath := fmt.Sprintf("out/%v/%v", m.Kind, fileName)
-
-	cmd = fmt.Sprintf("kubectl get -f %v -oyaml", filePath)
+	cmd = fmt.Sprintf(cmdStr, filePath)
 
 	return cmd, nil
 
