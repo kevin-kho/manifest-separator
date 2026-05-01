@@ -65,12 +65,12 @@ func main() {
 
 	}
 
-	err = export.WriteDiffCmdFile(diffCmds)
+	err = export.WriteCmdFile(diffCmds, "diff")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = export.WriteGetCmdFile(getCmds)
+	err = export.WriteCmdFile(getCmds, "get")
 	if err != nil {
 		log.Fatal(err)
 	}
