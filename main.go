@@ -49,14 +49,14 @@ func main() {
 			log.Fatal(err)
 		}
 
-		diffCmd, err := export.GetKubectlDiffCmd(mb)
+		diffCmd, err := export.GetCmd(mb, "diff")
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		diffCmds = append(diffCmds, diffCmd)
 
-		getCmd, err := export.GetKubectlGetCmd(mb)
+		getCmd, err := export.GetCmd(mb, "get")
 		if err != nil {
 			log.Fatal(err)
 		}
