@@ -74,28 +74,21 @@ func GetCmd(mb models.ManifestByte, cmdType string) (string, error) {
 
 }
 
-// TODO: combine into one or extract commong logic
-func WriteDiffCmdFile(cmds []string) error {
-
+func WriteCmdFile(cmds []string, cmdType string) error {
 	concat := strings.Join(cmds, "\n")
+	filePaths := map[string]string{
+		"diff": "out/diff-cmds.txt",
+		"get":  "out/get-cmds.txt",
+	}
+	filePath := filePaths[cmdType]
+	if filePath == "" {
+		return fmt.Errorf("Unknown cmdType: %v", cmdType)
+	}
 
-	err := os.WriteFile("out/diff-cmds.txt", []byte(concat), 0644)
+	err := os.WriteFile(filePath, []byte(concat), 0644)
 	if err != nil {
 		return err
 	}
 
 	return nil
-
-}
-
-func WriteGetCmdFile(cmds []string) error {
-	concat := strings.Join(cmds, "\n")
-
-	err := os.WriteFile("out/get-cmds.txt", []byte(concat), 0644)
-	if err != nil {
-		return err
-	}
-
-	return nil
-
 }
