@@ -1,5 +1,5 @@
 module manifest-seperator
 
-go 1.25.1
+go 1.26.2
 
 require github.com/goccy/go-yaml v1.19.2
