@@ -68,7 +68,7 @@ func GetCmd(mb models.ManifestByte, cmdType string) (string, error) {
 	}
 
 	fileName := m.GetFileName()
-	filePath := fmt.Sprintf(cmdStr, m.Kind, fileName)
+	filePath := fmt.Sprintf("out/%v/%v", m.Kind, fileName)
 
 	cmd = fmt.Sprintf(cmdStr, filePath)
 
