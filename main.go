@@ -38,7 +38,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var cmds []string
+	var diffCmds []string
+	var getCmds []string
 
 	// TODO: split into two loops?
 	for _, mb := range manifestBytes {
@@ -48,16 +49,28 @@ func main() {
 			log.Fatal(err)
 		}
 
-		cmd, err := export.GetKubectlDiffCmd(mb)
+		diffCmd, err := export.GetKubectlDiffCmd(mb)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		cmds = append(cmds, cmd)
+		diffCmds = append(diffCmds, diffCmd)
+
+		getCmd, err := export.GetKubectlGetCmd(mb)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		getCmds = append(getCmds, getCmd)
 
 	}
 
-	err = export.WriteDiffCmdFile(cmds)
+	err = export.WriteDiffCmdFile(diffCmds)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = export.WriteGetCmdFile(getCmds)
 	if err != nil {
 		log.Fatal(err)
 	}
