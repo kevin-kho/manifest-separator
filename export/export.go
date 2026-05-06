@@ -80,8 +80,8 @@ func GetCmd(mb models.ManifestByte, cmdType string) (string, error) {
 func WriteCmdFile(cmds []string, cmdType string) error {
 	concat := strings.Join(cmds, "\n")
 	filePaths := map[string]string{
-		"diff": "out/diff-cmds.txt",
-		"get":  "out/get-cmds.txt",
+		"diff": "out/diff-cmds.sh",
+		"get":  "out/get-cmds.sh",
 	}
 	filePath := filePaths[cmdType]
 	if filePath == "" {
