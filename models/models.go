@@ -49,3 +49,29 @@ func (mb ManifestByte) UnmarshalManifest() (Manifest, error) {
 	}
 	return m, nil
 }
+
+func (mb ManifestByte) GetCmd(cmdType string) (string, error) {
+
+	var cmd string
+	cmdString := map[string]string{
+		"get":  "kubectl get -f %v -oyaml",
+		"diff": "kubectl diff -f %v",
+	}
+
+	cmdStr := cmdString[cmdType]
+	if cmdStr == "" {
+		return cmd, fmt.Errorf("Unknown cmdType: %v", cmdType)
+	}
+
+	m, err := mb.UnmarshalManifest()
+	if err != nil {
+		return cmd, err
+	}
+
+	fileName := m.GetFileName()
+	filePath := fmt.Sprintf("out/%v/%v", m.Kind, fileName)
+
+	cmd = fmt.Sprintf(cmdStr, filePath)
+
+	return cmd, nil
+}

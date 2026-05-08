@@ -49,14 +49,14 @@ func main() {
 			log.Fatal(err)
 		}
 
-		diffCmd, err := export.GetCmd(mb, "diff")
+		diffCmd, err := mb.GetCmd("diff")
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		diffCmds = append(diffCmds, diffCmd)
 
-		getCmd, err := export.GetCmd(mb, "get")
+		getCmd, err := mb.GetCmd("get")
 		if err != nil {
 			log.Fatal(err)
 		}
