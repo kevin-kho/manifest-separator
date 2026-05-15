@@ -33,3 +33,34 @@ func TestGetFileName(t *testing.T) {
 	assert.Equal(nFileName, "Role_RoleName_Namespace.yaml", "they should be equal")
 
 }
+
+func TestIsValidManifest(t *testing.T) {
+
+	assert := assert.New(t)
+
+	var emptyMb ManifestByte
+	assert.False(emptyMb.IsValidManifest())
+
+	invalidMb := ManifestByte("---\n# Source: cni/templates/clusterrolebindings.yaml\n---")
+	assert.False(invalidMb.IsValidManifest())
+
+	validMb := ManifestByte(`
+---
+# Source: cni/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: istio-cni
+  namespace: kube-system
+  labels:
+    app: istio-cni
+    release: istio-cni
+    istio.io/rev: default
+    install.operator.istio.io/owning-resource: unknown
+    operator.istio.io/component: "Cni"
+---
+	`)
+
+	assert.True(validMb.IsValidManifest())
+
+}
