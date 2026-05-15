@@ -64,3 +64,36 @@ metadata:
 	assert.True(validMb.IsValidManifest())
 
 }
+
+func TestGetCmd(t *testing.T) {
+	assert := assert.New(t)
+
+	mb := ManifestByte(`
+---
+# Source: cni/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: istio-cni
+  namespace: kube-system
+  labels:
+    app: istio-cni
+    release: istio-cni
+    istio.io/rev: default
+    install.operator.istio.io/owning-resource: unknown
+    operator.istio.io/component: "Cni"
+---
+	`)
+
+	_, err := mb.GetCmd("invalid")
+	assert.Error(err)
+
+	cmd, err := mb.GetCmd("get")
+	assert.NoError(err)
+	assert.Equal("kubectl get -f out/ServiceAccount/ServiceAccount_istio-cni_kube-system.yaml -oyaml", cmd)
+
+	cmd, err = mb.GetCmd("diff")
+	assert.NoError(err)
+	assert.Equal("kubectl diff -f out/ServiceAccount/ServiceAccount_istio-cni_kube-system.yaml", cmd)
+
+}
