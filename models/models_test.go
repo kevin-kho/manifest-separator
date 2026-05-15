@@ -29,8 +29,8 @@ func TestGetFileName(t *testing.T) {
 	cFileName := cm.GetFileName()
 	nFileName := nm.GetFileName()
 
-	assert.Equal(cFileName, "ClusterRole_ClusterRoleName.yaml", "they should be equal")
-	assert.Equal(nFileName, "Role_RoleName_Namespace.yaml", "they should be equal")
+	assert.Equal("ClusterRole_ClusterRoleName.yaml", cFileName, "they should be equal")
+	assert.Equal("Role_RoleName_Namespace.yaml", nFileName, "they should be equal")
 
 }
 
