@@ -6,6 +6,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var validMb ManifestByte = ManifestByte(`
+---
+# Source: cni/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: istio-cni
+  namespace: kube-system
+  labels:
+    app: istio-cni
+    release: istio-cni
+    istio.io/rev: default
+    install.operator.istio.io/owning-resource: unknown
+    operator.istio.io/component: "Cni"
+---
+	`)
+
 func TestGetFileName(t *testing.T) {
 	assert := assert.New(t)
 	cm := Manifest{
@@ -44,23 +61,6 @@ func TestIsValidManifest(t *testing.T) {
 	invalidMb := ManifestByte("---\n# Source: cni/templates/clusterrolebindings.yaml\n---")
 	assert.False(invalidMb.IsValidManifest())
 
-	validMb := ManifestByte(`
----
-# Source: cni/templates/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: istio-cni
-  namespace: kube-system
-  labels:
-    app: istio-cni
-    release: istio-cni
-    istio.io/rev: default
-    install.operator.istio.io/owning-resource: unknown
-    operator.istio.io/component: "Cni"
----
-	`)
-
 	assert.True(validMb.IsValidManifest())
 
 }
@@ -68,31 +68,14 @@ metadata:
 func TestGetCmd(t *testing.T) {
 	assert := assert.New(t)
 
-	mb := ManifestByte(`
----
-# Source: cni/templates/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: istio-cni
-  namespace: kube-system
-  labels:
-    app: istio-cni
-    release: istio-cni
-    istio.io/rev: default
-    install.operator.istio.io/owning-resource: unknown
-    operator.istio.io/component: "Cni"
----
-	`)
-
-	_, err := mb.GetCmd("invalid")
+	_, err := validMb.GetCmd("invalid")
 	assert.Error(err)
 
-	cmd, err := mb.GetCmd("get")
+	cmd, err := validMb.GetCmd("get")
 	assert.NoError(err)
 	assert.Equal("kubectl get -f out/ServiceAccount/ServiceAccount_istio-cni_kube-system.yaml -oyaml", cmd)
 
-	cmd, err = mb.GetCmd("diff")
+	cmd, err = validMb.GetCmd("diff")
 	assert.NoError(err)
 	assert.Equal("kubectl diff -f out/ServiceAccount/ServiceAccount_istio-cni_kube-system.yaml", cmd)
 
