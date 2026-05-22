@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"manifest-seperator/export"
 	"manifest-seperator/helper"
+	"manifest-seperator/models"
 	"os"
 )
 
@@ -20,6 +22,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	lb := models.CreateListByte(data)
+	fmt.Println(lb)
+
+	fmt.Println(string(lb))
+
+	return // TODO: remove when feature complete
 
 	manifestBytes := helper.SeparateManifests(data)
 	kinds, err := helper.GetKinds(manifestBytes)
