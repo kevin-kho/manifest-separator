@@ -12,6 +12,27 @@ type Manifest struct {
 	Metadata   Metadata `yaml:"metadata"`
 }
 
+type List struct {
+	Manifest
+	Items []any `yaml:"items"`
+}
+
+func (l List) GetItemsAsManifests() ([]Manifest, error) {
+	var res []Manifest
+
+	for _, item := range l.Items {
+		m, ok := item.(Manifest)
+		if !ok {
+			return res, fmt.Errorf("%v failed type assertion to Manifest", item)
+		}
+
+		res = append(res, m)
+	}
+
+	return res, nil
+
+}
+
 func (m Manifest) GetFileName() string {
 	if m.Metadata.Namespace == "" {
 		return fmt.Sprintf("%v_%v.yaml", m.Kind, m.Metadata.Name)
@@ -74,4 +95,21 @@ func (mb ManifestByte) GetCmd(cmdType string) (string, error) {
 	cmd = fmt.Sprintf(cmdStr, filePath)
 
 	return cmd, nil
+}
+
+type ListByte []byte
+
+func CreateListByte(data []byte) ListByte {
+	var lb ListByte = data
+	return lb
+}
+
+func (lb ListByte) UnmarshalManifest() (List, error) {
+	var m List
+	err := yaml.Unmarshal(lb, &m)
+	if err != nil {
+		return m, err
+	}
+	return m, nil
+
 }
