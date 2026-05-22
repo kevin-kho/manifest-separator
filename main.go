@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"manifest-seperator/export"
 	"manifest-seperator/helper"
@@ -115,24 +116,29 @@ func handleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) err
 
 func main() {
 
-	args := os.Args
-	if len(args) < 2 {
+	listFlag := flag.Bool("list", false, "parse the file as if it's Kind: List")
+	flag.Parse()
+
+	args := flag.Args()
+	if len(args) < 1 {
 		log.Fatal("No path to manifest given")
 	}
 
-	path := args[1]
+	path := args[0]
 	data, err := os.ReadFile(path)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = handleList(data)
-	if err != nil {
-		log.Fatal(err)
-	}
+	if *listFlag {
+		err = handleList(data)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	return // TODO: remove when feature complete
+		return
+	}
 
 	err = handleDashes(data)
 	if err != nil {
