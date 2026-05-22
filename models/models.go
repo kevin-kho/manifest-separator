@@ -17,16 +17,33 @@ type List struct {
 	Items []any `yaml:"items"`
 }
 
-func (l List) GetItemsAsManifests() ([]Manifest, error) {
-	var res []Manifest
+type ItemDetailed struct {
+	Manifest     Manifest
+	ManifestByte ManifestByte
+}
+
+func (l List) GetItemsDetailed() ([]ItemDetailed, error) {
+
+	var res []ItemDetailed
 
 	for _, item := range l.Items {
-		m, ok := item.(Manifest)
-		if !ok {
-			return res, fmt.Errorf("%v failed type assertion to Manifest", item)
+
+		b, err := yaml.Marshal(item)
+		if err != nil {
+			return res, err
 		}
 
-		res = append(res, m)
+		var m Manifest
+		err = yaml.Unmarshal(b, &m)
+		if err != nil {
+			return res, err
+		}
+
+		res = append(res, ItemDetailed{
+			Manifest:     m,
+			ManifestByte: b,
+		})
+
 	}
 
 	return res, nil
