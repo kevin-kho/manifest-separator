@@ -9,56 +9,22 @@ import (
 )
 
 func handleDashes(data []byte) error {
+
+	// Clear
+	err := export.RemoveAllKindDir()
+	if err != nil {
+		return err
+	}
+
+	// Parse
 	manifestBytes := helper.SeparateManifests(data)
 	kinds, err := helper.GetKinds(manifestBytes)
 	if err != nil {
 		return err
 	}
 
-	// Clear out all existing manifests
-	err = export.RemoveAllKindDir()
-	if err != nil {
-		return err
-	}
-
-	err = export.CreateKindDir(kinds)
-	if err != nil {
-		return err
-	}
-
-	var diffCmds []string
-	var getCmds []string
-
-	// TODO: split into two loops?
-	for _, mb := range manifestBytes {
-
-		err := export.WriteManifestToFile(mb)
-		if err != nil {
-			return err
-		}
-
-		diffCmd, err := mb.GetCmd("diff")
-		if err != nil {
-			return err
-		}
-
-		diffCmds = append(diffCmds, diffCmd)
-
-		getCmd, err := mb.GetCmd("get")
-		if err != nil {
-			return err
-		}
-
-		getCmds = append(getCmds, getCmd)
-
-	}
-
-	err = export.WriteCmdFile(diffCmds, "diff")
-	if err != nil {
-		return err
-	}
-
-	err = export.WriteCmdFile(getCmds, "get")
+	// Write
+	err = handleWrite(kinds, manifestBytes)
 	if err != nil {
 		return err
 	}
@@ -68,34 +34,41 @@ func handleDashes(data []byte) error {
 }
 
 func handleList(data []byte) error {
-	lb := models.CreateListByte(data)
 
+	// Clear
+	err := export.RemoveAllKindDir()
+	if err != nil {
+		return err
+	}
+
+	// Parse
+	var lb models.ListByte = data
 	lst, err := lb.UnmarshalManifest()
 	if err != nil {
 		return err
 	}
 
-	itemsDetailed, err := lst.GetItemsDetailed()
+	manifestBytes, err := lst.GetManifestBytes()
 	if err != nil {
 		return err
-	}
-
-	var manifestBytes []models.ManifestByte
-	for _, i := range itemsDetailed {
-		manifestBytes = append(manifestBytes, i.ManifestByte)
 	}
 
 	kinds, err := helper.GetKinds(manifestBytes)
 	if err != nil {
 		return err
 	}
-	// Clear out all existing manifests
-	err = export.RemoveAllKindDir()
+
+	// Write
+	err = handleWrite(kinds, manifestBytes)
 	if err != nil {
 		return err
 	}
 
-	err = export.CreateKindDir(kinds)
+	return nil
+}
+
+func handleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) error {
+	err := export.CreateKindDir(kinds)
 	if err != nil {
 		return err
 	}
