@@ -17,36 +17,37 @@ type List struct {
 	Items []any `yaml:"items"`
 }
 
-type ItemDetailed struct {
-	Manifest     Manifest
-	ManifestByte ManifestByte
-}
+func (l List) GetManifestBytes() ([]ManifestByte, error) {
 
-func (l List) GetItemsDetailed() ([]ItemDetailed, error) {
-
-	var res []ItemDetailed
+	var res []ManifestByte
 
 	for _, item := range l.Items {
+		var b ManifestByte
 
 		b, err := yaml.Marshal(item)
 		if err != nil {
 			return res, err
 		}
 
-		var m Manifest
-		err = yaml.Unmarshal(b, &m)
-		if err != nil {
-			return res, err
+		if b.IsValidManifest() {
+			res = append(res, b)
 		}
-
-		res = append(res, ItemDetailed{
-			Manifest:     m,
-			ManifestByte: b,
-		})
 
 	}
 
 	return res, nil
+
+}
+
+type ListByte []byte
+
+func (lb ListByte) UnmarshalManifest() (List, error) {
+	var m List
+	err := yaml.Unmarshal(lb, &m)
+	if err != nil {
+		return m, err
+	}
+	return m, nil
 
 }
 
@@ -112,21 +113,4 @@ func (mb ManifestByte) GetCmd(cmdType string) (string, error) {
 	cmd = fmt.Sprintf(cmdStr, filePath)
 
 	return cmd, nil
-}
-
-type ListByte []byte
-
-func CreateListByte(data []byte) ListByte {
-	var lb ListByte = data
-	return lb
-}
-
-func (lb ListByte) UnmarshalManifest() (List, error) {
-	var m List
-	err := yaml.Unmarshal(lb, &m)
-	if err != nil {
-		return m, err
-	}
-	return m, nil
-
 }
