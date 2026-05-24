@@ -29,7 +29,12 @@ func (l List) GetManifestBytes() ([]ManifestByte, error) {
 			return res, err
 		}
 
-		if b.IsValidManifest() {
+		valid, err := b.IsValidManifest()
+		if err != nil {
+			return res, err
+		}
+
+		if valid {
 			res = append(res, b)
 		}
 
@@ -69,15 +74,15 @@ type ManifestByte []byte
 // ---
 // # Source: cni/templates/clusterrolebinding.yaml
 // ---
-func (mb ManifestByte) IsValidManifest() bool {
+func (mb ManifestByte) IsValidManifest() (bool, error) {
 	var empty Manifest
 
 	mani, err := mb.UnmarshalManifest()
 	if err != nil {
-		return false // TODO: should it return error?
+		return false, err
 	}
 
-	return mani != empty
+	return mani != empty, nil
 }
 
 func (mb ManifestByte) UnmarshalManifest() (Manifest, error) {

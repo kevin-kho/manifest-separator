@@ -80,7 +80,8 @@ func TestGetKinds(t *testing.T) {
 
 func TestSeparateManifests(t *testing.T) {
 	assert := assert.New(t)
-	m := SeparateManifests(data)
+	m, err := SeparateManifests(data)
+	assert.Nil(err)
 
 	assert.Len(m, 2)
 
