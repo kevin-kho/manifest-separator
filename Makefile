@@ -1,5 +1,5 @@
 build:
-	go build -o bin/manifest-seperator main.go
+	go build -o bin/manifest-separator main.go
 
 test:
 	go test ./...
