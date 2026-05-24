@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -78,5 +79,23 @@ func TestGetCmd(t *testing.T) {
 	cmd, err = validMb.GetCmd("diff")
 	assert.NoError(err)
 	assert.Equal("kubectl diff -f out/ServiceAccount/ServiceAccount_istio-cni_kube-system.yaml", cmd)
+
+}
+
+func TestGetManifestBytes(t *testing.T) {
+
+	assert := assert.New(t)
+	item0 := map[string]any{"apiVersion": "v1", "kind": "ServiceAccount", "metadata": map[string]any{"name": "my-app"}}
+	item1 := map[string]any{"apiVersion": "v1", "kind": "ServiceAccount", "metadata": map[string]any{"name": "my-other-app"}}
+
+	l := List{
+		Manifest: Manifest{},
+		Items:    []any{item0, item1},
+	}
+
+	m, err := l.GetManifestBytes()
+	fmt.Println(m)
+	assert.Nil(err)
+	assert.Len(m, 2)
 
 }
