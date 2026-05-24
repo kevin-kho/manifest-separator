@@ -18,7 +18,11 @@ func handleDashes(data []byte) error {
 	}
 
 	// Parse
-	manifestBytes := helper.SeparateManifests(data)
+	manifestBytes, err := helper.SeparateManifests(data)
+	if err != nil {
+		return err
+	}
+
 	kinds, err := helper.GetKinds(manifestBytes)
 	if err != nil {
 		return err
