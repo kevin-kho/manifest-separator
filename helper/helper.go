@@ -2,11 +2,14 @@ package helper
 
 import (
 	"bytes"
+	"fmt"
 	"manifest-seperator/models"
 	"slices"
 )
 
 func SeparateManifests(data []byte) ([]models.ManifestByte, error) {
+
+	fmt.Println("Separating manifests...")
 
 	var res []models.ManifestByte
 
@@ -41,6 +44,8 @@ func SeparateManifests(data []byte) ([]models.ManifestByte, error) {
 }
 
 func GetKinds(mb []models.ManifestByte) (map[string]bool, error) {
+
+	fmt.Println("Getting set of Kinds")
 
 	res := make(map[string]bool)
 	for _, m := range mb {

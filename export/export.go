@@ -9,6 +9,7 @@ import (
 
 func RemoveAllKindDir() error {
 
+	fmt.Println("Clearing /out directory")
 	err := os.RemoveAll("out/")
 	if err != nil {
 		return err
@@ -20,6 +21,7 @@ func RemoveAllKindDir() error {
 func CreateKindDir(kinds map[string]bool) error {
 	for kind := range kinds {
 		path := fmt.Sprintf("out/%v", kind)
+		fmt.Printf("Creating directory: %v\n", path)
 		err := os.MkdirAll(path, 0755)
 		if err != nil {
 			return err
@@ -38,6 +40,7 @@ func WriteManifestToFile(mb models.ManifestByte) error {
 	fileName := m.GetFileName()
 	filePath := fmt.Sprintf("out/%v/%v", m.Kind, fileName)
 
+	fmt.Printf("Writing file: %v\n", filePath)
 	err = os.WriteFile(filePath, mb, 0644)
 	if err != nil {
 		return err
@@ -57,6 +60,7 @@ func WriteCmdFile(cmds []string, cmdType string) error {
 		return fmt.Errorf("Unknown cmdType: %v", cmdType)
 	}
 
+	fmt.Printf("Writing kubectl %v file\n", cmdType)
 	err := os.WriteFile(filePath, []byte(concat), 0644)
 	if err != nil {
 		return err
