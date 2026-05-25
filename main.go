@@ -145,7 +145,8 @@ func readStdIn() ([]byte, error) {
 
 func main() {
 
-	listFlag := flag.Bool("list", false, "parse the manifest as if it's Kind: List")
+	listFlag := flag.Bool("list", false, "parse the manifest as if it's Kind: List. Same as -l flag")
+	lFlag := flag.Bool("l", false, "parse the manifest as if it's Kind: List. Same as -list flag")
 	fileFlag := flag.String("f", "", "path to manifest file")
 	flag.Parse()
 
@@ -166,7 +167,7 @@ func main() {
 		log.Fatalf("Length of data is 0")
 	}
 
-	if *listFlag {
+	if *listFlag || *lFlag {
 		err = handleList(data)
 		if err != nil {
 			log.Fatal(err)
