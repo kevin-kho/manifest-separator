@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"flag"
+	"fmt"
 	"log"
 	"manifest-seperator/export"
 	"manifest-seperator/helper"
@@ -10,6 +12,8 @@ import (
 )
 
 func handleDashes(data []byte) error {
+
+	fmt.Println("Handling manifests separated by triple dashes")
 
 	// Clear
 	err := export.RemoveAllKindDir()
@@ -39,6 +43,8 @@ func handleDashes(data []byte) error {
 }
 
 func handleList(data []byte) error {
+
+	fmt.Println("Handling manifest as a Kind: List")
 
 	// Clear
 	err := export.RemoveAllKindDir()
@@ -118,21 +124,46 @@ func handleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) err
 	return nil
 }
 
-func main() {
+func readStdIn() ([]byte, error) {
+	var res []byte
 
-	listFlag := flag.Bool("list", false, "parse the file as if it's Kind: List")
-	flag.Parse()
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Println("Reading StdIn")
+	fmt.Println("Press Ctrl-D to exit out.")
 
-	args := flag.Args()
-	if len(args) < 1 {
-		log.Fatal("No path to manifest given")
+	for scanner.Scan() {
+		res = append(res, scanner.Bytes()...)
+		res = append(res, '\n')
 	}
 
-	path := args[0]
-	data, err := os.ReadFile(path)
+	if err := scanner.Err(); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func main() {
+
+	listFlag := flag.Bool("list", false, "parse the manifest as if it's Kind: List")
+	fileFlag := flag.String("f", "", "path to manifest file")
+	flag.Parse()
+
+	var data []byte
+	var err error
+	if *fileFlag != "" {
+		fmt.Printf("Reading file: %v\n", *fileFlag)
+		data, err = os.ReadFile(*fileFlag)
+	} else {
+		data, err = readStdIn()
+	}
 
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	if len(data) == 0 {
+		log.Fatalf("Length of data is 0")
 	}
 
 	if *listFlag {
@@ -141,12 +172,12 @@ func main() {
 			log.Fatal(err)
 		}
 
-		return
+	} else {
+		err = handleDashes(data)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
-	err = handleDashes(data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	fmt.Println("Separated Successfully!")
 }
