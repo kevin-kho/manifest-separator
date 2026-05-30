@@ -63,6 +63,21 @@ func GetKinds(mb []models.ManifestByte) (map[string]bool, error) {
 
 }
 
+func ContainsDupes(manifests []models.Manifest) bool {
+
+	seen := make(map[models.Manifest]bool)
+
+	for _, m := range manifests {
+		if seen[m] {
+			return true
+		}
+		seen[m] = true
+	}
+
+	return false
+
+}
+
 func HandleDashes(data []byte) error {
 
 	fmt.Println("Handling manifests separated by triple dashes")
@@ -77,6 +92,19 @@ func HandleDashes(data []byte) error {
 	manifestBytes, err := SeparateManifests(data)
 	if err != nil {
 		return err
+	}
+
+	// Check
+	var manifests []models.Manifest
+	for _, mb := range manifestBytes {
+		mani, err := mb.UnmarshalManifest()
+		if err != nil {
+			return err
+		}
+		manifests = append(manifests, mani)
+	}
+	if ContainsDupes(manifests) {
+		return fmt.Errorf("Duplicate Manifest found")
 	}
 
 	kinds, err := GetKinds(manifestBytes)
@@ -114,6 +142,19 @@ func HandleList(data []byte) error {
 	manifestBytes, err := lst.GetManifestBytes()
 	if err != nil {
 		return err
+	}
+
+	// Check
+	var manifests []models.Manifest
+	for _, mb := range manifestBytes {
+		mani, err := mb.UnmarshalManifest()
+		if err != nil {
+			return err
+		}
+		manifests = append(manifests, mani)
+	}
+	if ContainsDupes(manifests) {
+		return fmt.Errorf("Duplicate Manifest found")
 	}
 
 	kinds, err := GetKinds(manifestBytes)
