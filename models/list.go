@@ -1,6 +1,10 @@
 package models
 
-import "github.com/goccy/go-yaml"
+import (
+	"log/slog"
+
+	"github.com/goccy/go-yaml"
+)
 
 type List struct {
 	Manifest
@@ -26,6 +30,8 @@ func (l List) GetManifestBytes() ([]ManifestByte, error) {
 
 		if valid {
 			res = append(res, b)
+		} else {
+			slog.Warn("Skipping invalid manifest")
 		}
 
 	}

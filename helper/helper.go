@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"log/slog"
 	"manifest-seperator/export"
 	"manifest-seperator/models"
 	"os"
@@ -26,6 +27,8 @@ func SeparateManifests(data []byte) ([]models.ManifestByte, error) {
 			}
 			if valid {
 				res = append(res, curr)
+			} else {
+				slog.Warn("Skipping invalid manifest")
 			}
 			curr = []byte{}
 			continue
@@ -39,7 +42,13 @@ func SeparateManifests(data []byte) ([]models.ManifestByte, error) {
 	if err != nil {
 		return res, err
 	}
-	if len(curr) > 0 && valid {
+
+	if !valid {
+		slog.Warn("Skipping invalid manifest")
+		return res, nil
+	}
+
+	if len(curr) > 0 {
 		res = append(res, curr)
 	}
 
