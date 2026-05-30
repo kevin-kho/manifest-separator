@@ -1,9 +1,12 @@
 package helper
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
+	"manifest-seperator/export"
 	"manifest-seperator/models"
+	"os"
 	"slices"
 )
 
@@ -58,4 +61,136 @@ func GetKinds(mb []models.ManifestByte) (map[string]bool, error) {
 
 	return res, nil
 
+}
+
+func HandleDashes(data []byte) error {
+
+	fmt.Println("Handling manifests separated by triple dashes")
+
+	// Clear
+	err := export.RemoveAllKindDir()
+	if err != nil {
+		return err
+	}
+
+	// Parse
+	manifestBytes, err := SeparateManifests(data)
+	if err != nil {
+		return err
+	}
+
+	kinds, err := GetKinds(manifestBytes)
+	if err != nil {
+		return err
+	}
+
+	// Write
+	err = HandleWrite(kinds, manifestBytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func HandleList(data []byte) error {
+
+	fmt.Println("Handling manifest as a Kind: List")
+
+	// Clear
+	err := export.RemoveAllKindDir()
+	if err != nil {
+		return err
+	}
+
+	// Parse
+	var lb models.ListByte = data
+	lst, err := lb.UnmarshalManifest()
+	if err != nil {
+		return err
+	}
+
+	manifestBytes, err := lst.GetManifestBytes()
+	if err != nil {
+		return err
+	}
+
+	kinds, err := GetKinds(manifestBytes)
+	if err != nil {
+		return err
+	}
+
+	// Write
+	err = HandleWrite(kinds, manifestBytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func HandleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) error {
+	err := export.CreateKindDir(kinds)
+	if err != nil {
+		return err
+	}
+
+	var diffCmds []string
+	var getCmds []string
+
+	// TODO: split into two loops?
+	for _, mb := range manifestBytes {
+
+		err := export.WriteManifestToFile(mb)
+		if err != nil {
+			return err
+		}
+
+		diffCmd, err := mb.GetCmd("diff")
+		if err != nil {
+			return err
+		}
+
+		diffCmds = append(diffCmds, diffCmd)
+
+		getCmd, err := mb.GetCmd("get")
+		if err != nil {
+			return err
+		}
+
+		getCmds = append(getCmds, getCmd)
+
+	}
+
+	err = export.WriteCmdFile(diffCmds, "diff")
+	if err != nil {
+		return err
+	}
+
+	err = export.WriteCmdFile(getCmds, "get")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ReadStdIn() ([]byte, error) {
+	var res []byte
+
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Println("Reading StdIn")
+	fmt.Println("Press Ctrl-D to exit out.")
+
+	for scanner.Scan() {
+		res = append(res, scanner.Bytes()...)
+		res = append(res, '\n')
+	}
+
+	if err := scanner.Err(); err != nil {
+		return res, err
+	}
+
+	return res, nil
 }
