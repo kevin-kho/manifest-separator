@@ -66,6 +66,44 @@ metadata:
 ---`),
 }
 
+var duplicateManifests []models.Manifest = []models.Manifest{
+	{
+		ApiVersion: "v1",
+		Kind:       "ServiceAccount",
+		Metadata: models.Metadata{
+			Name:      "name",
+			Namespace: "namespace",
+		},
+	},
+	{
+		ApiVersion: "v1",
+		Kind:       "ServiceAccount",
+		Metadata: models.Metadata{
+			Name:      "name",
+			Namespace: "namespace",
+		},
+	},
+}
+
+var uniqueManifests []models.Manifest = []models.Manifest{
+	{
+		ApiVersion: "v1",
+		Kind:       "ServiceAccount",
+		Metadata: models.Metadata{
+			Name:      "alice",
+			Namespace: "namespace",
+		},
+	},
+	{
+		ApiVersion: "v1",
+		Kind:       "ServiceAccount",
+		Metadata: models.Metadata{
+			Name:      "bob",
+			Namespace: "namespace",
+		},
+	},
+}
+
 func TestGetKinds(t *testing.T) {
 	assert := assert.New(t)
 
@@ -84,5 +122,16 @@ func TestSeparateManifests(t *testing.T) {
 	assert.Nil(err)
 
 	assert.Len(m, 2)
+
+}
+
+func TestContainDupes(t *testing.T) {
+	assert := assert.New(t)
+
+	res := ContainsDupes(duplicateManifests)
+	assert.True(res)
+
+	res = ContainsDupes(uniqueManifests)
+	assert.False(res)
 
 }
