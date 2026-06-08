@@ -188,6 +188,7 @@ func HandleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) err
 
 	var diffCmds []string
 	var getCmds []string
+	var applyCmds []string
 
 	// TODO: split into two loops?
 	for _, mb := range manifestBytes {
@@ -211,6 +212,13 @@ func HandleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) err
 
 		getCmds = append(getCmds, getCmd)
 
+		applyCmd, err := mb.GetCmd("apply")
+		if err != nil {
+			return err
+		}
+
+		applyCmds = append(applyCmds, applyCmd)
+
 	}
 
 	err = export.WriteCmdFile(diffCmds, "diff")
@@ -219,6 +227,11 @@ func HandleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) err
 	}
 
 	err = export.WriteCmdFile(getCmds, "get")
+	if err != nil {
+		return err
+	}
+
+	err = export.WriteCmdFile(applyCmds, "apply")
 	if err != nil {
 		return err
 	}

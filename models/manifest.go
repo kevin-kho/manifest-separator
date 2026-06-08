@@ -54,8 +54,9 @@ func (mb ManifestByte) GetCmd(cmdType string) (string, error) {
 
 	var cmd string
 	cmdString := map[string]string{
-		"get":  "kubectl get -f %v -oyaml",
-		"diff": "kubectl diff -f %v",
+		"get":   "kubectl get -f %v -oyaml",
+		"diff":  "kubectl diff -f %v",
+		"apply": "kubectl apply -f %v",
 	}
 
 	cmdStr := cmdString[cmdType]
