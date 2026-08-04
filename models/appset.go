@@ -10,3 +10,5 @@ type AppManifest struct {
 type App struct {
 	AppManifest `yaml:",inline"`
 }
+
+type AppSet []App

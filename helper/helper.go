@@ -59,15 +59,15 @@ func SeparateManifests(data []byte) ([]models.ManifestByte, error) {
 
 func SeparateAppSet(data []byte) ([]models.ManifestByte, error) {
 
-	var apps []models.App
+	var appSet models.AppSet
 	var res []models.ManifestByte
 
-	err := yaml.Unmarshal(data, &apps)
+	err := yaml.Unmarshal(data, &appSet)
 	if err != nil {
 		return res, err
 	}
 
-	for _, app := range apps {
+	for _, app := range appSet {
 		b, err := yaml.Marshal(app)
 		if err != nil {
 			return res, err
@@ -205,7 +205,7 @@ func HandleList(data []byte) error {
 }
 
 func HandleAppSet(data []byte) error {
-	fmt.Println("Handling appset manifests")
+	fmt.Println("Handling ArgoCD AppSet")
 
 	// Clear
 	err := export.RemoveAllKindDir()
