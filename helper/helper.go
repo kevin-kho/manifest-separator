@@ -57,6 +57,28 @@ func SeparateManifests(data []byte) ([]models.ManifestByte, error) {
 	return res, nil
 }
 
+func SeparateAppSet(data []byte) ([]models.ManifestByte, error) {
+
+	var apps []models.App
+	var res []models.ManifestByte
+
+	err := yaml.Unmarshal(data, &apps)
+	if err != nil {
+		return res, err
+	}
+
+	for _, app := range apps {
+		b, err := yaml.Marshal(app)
+		if err != nil {
+			return res, err
+		}
+		res = append(res, b)
+	}
+
+	return res, nil
+
+}
+
 func GetKinds(mb []models.ManifestByte) (map[string]bool, error) {
 
 	fmt.Println("Getting set of Kinds")
@@ -193,20 +215,9 @@ func HandleAppSet(data []byte) error {
 
 	// Parse
 	// Generated AppSet comes as array of App
-	var apps []models.App
-	var manifestBytes []models.ManifestByte
-
-	err = yaml.Unmarshal(data, &apps)
+	manifestBytes, err := SeparateAppSet(data)
 	if err != nil {
 		return err
-	}
-
-	for _, app := range apps {
-		b, err := yaml.Marshal(app)
-		if err != nil {
-			return err
-		}
-		manifestBytes = append(manifestBytes, b)
 	}
 
 	// Check
