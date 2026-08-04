@@ -35,6 +35,49 @@ metadata:
     operator.istio.io/component: "Cni"
 ---`)
 
+var appSetData []byte = []byte(`- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    finalizers:
+    - resources-finalizer.argocd.argoproj.io
+    name: app-name-0
+  spec:
+    destination:
+      name: destination-name-0
+      namespace: namespace-0
+    project: default
+    sources:
+    - path: path-0
+      repoURL: repoURL
+      targetRevision: HEAD
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+      - ServerSideApply=true
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    finalizers:
+    - resources-finalizer.argocd.argoproj.io
+    name: app-name-1
+  spec:
+    destination:
+      name: destination-name-1
+      namespace: namespace-1
+    project: default
+    sources:
+    - path: path
+    - repoURL: repoUrl
+      targetRevision: HEAD
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+      - ServerSideApply=true`)
+
 var mb []models.ManifestByte = []models.ManifestByte{
 	models.ManifestByte(`---
 # Source: cni/templates/serviceaccount.yaml
@@ -123,6 +166,15 @@ func TestSeparateManifests(t *testing.T) {
 
 	assert.Len(m, 2)
 
+}
+
+func TestSeparateAppSet(t *testing.T) {
+	assert := assert.New(t)
+
+	m, err := SeparateAppSet(appSetData)
+
+	assert.Nil(err)
+	assert.Len(m, 2)
 }
 
 func TestContainDupes(t *testing.T) {
