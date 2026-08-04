@@ -9,6 +9,8 @@ import (
 	"manifest-seperator/models"
 	"os"
 	"slices"
+
+	"github.com/goccy/go-yaml"
 )
 
 func SeparateManifests(data []byte) ([]models.ManifestByte, error) {
@@ -151,6 +153,60 @@ func HandleList(data []byte) error {
 	manifestBytes, err := lst.GetManifestBytes()
 	if err != nil {
 		return err
+	}
+
+	// Check
+	var manifests []models.Manifest
+	for _, mb := range manifestBytes {
+		mani, err := mb.UnmarshalManifest()
+		if err != nil {
+			return err
+		}
+		manifests = append(manifests, mani)
+	}
+	if ContainsDupes(manifests) {
+		return fmt.Errorf("Duplicate Manifest found")
+	}
+
+	kinds, err := GetKinds(manifestBytes)
+	if err != nil {
+		return err
+	}
+
+	// Write
+	err = HandleWrite(kinds, manifestBytes)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func HandleAppSet(data []byte) error {
+	fmt.Println("Handling appset manifests")
+
+	// Clear
+	err := export.RemoveAllKindDir()
+	if err != nil {
+		return err
+	}
+
+	// Parse
+	// Generated AppSet comes as array of App
+	var apps []models.App
+	var manifestBytes []models.ManifestByte
+
+	err = yaml.Unmarshal(data, &apps)
+	if err != nil {
+		return err
+	}
+
+	for _, app := range apps {
+		b, err := yaml.Marshal(app)
+		if err != nil {
+			return err
+		}
+		manifestBytes = append(manifestBytes, b)
 	}
 
 	// Check

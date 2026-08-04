@@ -10,6 +10,7 @@ import (
 
 func main() {
 
+	appSetFlag := flag.Bool("appset", false, "parse the manifest of a generated ArgoCD AppSet")
 	listFlag := flag.Bool("list", false, "parse the manifest as if it's Kind: List. Same as -l flag")
 	lFlag := flag.Bool("l", false, "parse the manifest as if it's Kind: List. Same as -list flag")
 	fileFlag := flag.String("f", "", "path to manifest file")
@@ -38,6 +39,11 @@ func main() {
 			log.Fatal(err)
 		}
 
+	} else if *appSetFlag {
+		err = helper.HandleAppSet(data)
+		if err != nil {
+			log.Fatal(err)
+		}
 	} else {
 		err = helper.HandleDashes(data)
 		if err != nil {
