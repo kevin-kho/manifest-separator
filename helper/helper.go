@@ -347,13 +347,13 @@ func ReadDir(path string) ([][]byte, error) {
 
 }
 
-func CombineFiles(files [][]byte, strategy string) ([]byte, error) {
+func CombineFiles(files [][]byte, mode models.Mode) ([]byte, error) {
 	var res []byte
 	var err error
 
-	switch strategy {
-	case "list":
-		fmt.Println("CombineFiles List")
+	switch mode {
+	case models.ModeList:
+		fmt.Println("CombineFiles ModeList")
 		var items []any
 		for _, f := range files {
 			var lb models.ListByte = f
@@ -373,14 +373,14 @@ func CombineFiles(files [][]byte, strategy string) ([]byte, error) {
 
 		res, err = yaml.Marshal(l)
 
-	case "appset":
-		fmt.Println("CombineFiles AppSet")
+	case models.ModeAppSet:
+		fmt.Println("CombineFiles ModeAppSet")
 		for _, f := range files {
 			res = append(res, f...)
 			res = append(res, []byte("\n")...)
 		}
-	case "tripleDash":
-		fmt.Println("CombineFiles TripleDash")
+	case models.ModeDash:
+		fmt.Println("CombineFiles ModeDash")
 		for _, f := range files {
 			res = append(res, f...)
 			res = append(res, []byte("\n---\n")...)

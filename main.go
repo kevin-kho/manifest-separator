@@ -1,18 +1,19 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"manifest-seperator/helper"
+	"manifest-seperator/models"
 	"os"
 )
 
 func main() {
 
-	appSetFlag := flag.Bool("appset", false, "parse the manifest of a generated ArgoCD AppSet")
-	listFlag := flag.Bool("list", false, "parse the manifest as if it's Kind: List. Same as -l flag")
-	lFlag := flag.Bool("l", false, "parse the manifest as if it's Kind: List. Same as -list flag")
+	// Parse Flags
+	modeFlag := flag.String("mode", "dash", "specify the method used to parse manifests. Possible values: dash, list, appset. Default value: dash")
 	fileFlag := flag.String("f", "", "path to manifest file")
 	flag.Parse()
 
@@ -20,18 +21,37 @@ func main() {
 	var files [][]byte
 	var err error
 	var fileInfo os.FileInfo
+	var mode models.Mode
+
+	switch *modeFlag {
+	case "dash":
+		mode = models.ModeDash
+	case "list":
+		mode = models.ModeList
+	case "appset":
+		mode = models.ModeAppSet
+	default:
+		err = errors.New("unknown mode flag. Must be one of the following: dash, list, appset")
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if *fileFlag != "" {
 		fileInfo, err = os.Stat(*fileFlag)
 		if err != nil {
 			log.Fatal(err)
 		}
-		if fileInfo.IsDir() {
+
+		switch {
+		case fileInfo.Mode().IsDir():
+			fmt.Printf("Reading dir: %v\n", *fileFlag)
 			files, err = helper.ReadDir(*fileFlag)
-		} else {
+		case fileInfo.Mode().IsRegular():
 			fmt.Printf("Reading file: %v\n", *fileFlag)
 			data, err = os.ReadFile(*fileFlag)
 		}
+
 	} else {
 		data, err = helper.ReadStdIn()
 	}
@@ -41,15 +61,7 @@ func main() {
 	}
 
 	if len(files) > 0 {
-		var strategy string
-		if *listFlag || *lFlag {
-			strategy = "list"
-		} else if *appSetFlag {
-			strategy = "appset"
-		} else {
-			strategy = "tripleDash"
-		}
-		data, err = helper.CombineFiles(files, strategy)
+		data, err = helper.CombineFiles(files, mode)
 	}
 
 	if err != nil {
@@ -60,24 +72,17 @@ func main() {
 		log.Fatalf("Length of data is 0")
 	}
 
-	// TODO: refactor to use a single "mode" flag to determine how to process files
-	// In future, have an "auto" mode which determines how the manifest should be handled
-	if *listFlag || *lFlag {
-		err = helper.HandleList(data)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-	} else if *appSetFlag {
-		err = helper.HandleAppSet(data)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
+	switch mode {
+	case models.ModeDash:
 		err = helper.HandleDashes(data)
-		if err != nil {
-			log.Fatal(err)
-		}
+	case models.ModeList:
+		err = helper.HandleList(data)
+	case models.ModeAppSet:
+		err = helper.HandleAppSet(data)
+	}
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	fmt.Println("Separated Successfully!")
