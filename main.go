@@ -17,12 +17,39 @@ func main() {
 	flag.Parse()
 
 	var data []byte
+	var files [][]byte
 	var err error
+	var fileInfo os.FileInfo
+
 	if *fileFlag != "" {
-		fmt.Printf("Reading file: %v\n", *fileFlag)
-		data, err = os.ReadFile(*fileFlag)
+		fileInfo, err = os.Stat(*fileFlag)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if fileInfo.IsDir() {
+			files, err = helper.ReadDir(*fileFlag)
+		} else {
+			fmt.Printf("Reading file: %v\n", *fileFlag)
+			data, err = os.ReadFile(*fileFlag)
+		}
 	} else {
 		data, err = helper.ReadStdIn()
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if len(files) > 0 {
+		var strategy string
+		if *listFlag || *lFlag {
+			strategy = "list"
+		} else if *appSetFlag {
+			strategy = "appset"
+		} else {
+			strategy = "tripleDash"
+		}
+		data, err = helper.CombineFiles(files, strategy)
 	}
 
 	if err != nil {
@@ -33,6 +60,8 @@ func main() {
 		log.Fatalf("Length of data is 0")
 	}
 
+	// TODO: refactor to use a single "mode" flag to determine how to process files
+	// In future, have an "auto" mode which determines how the manifest should be handled
 	if *listFlag || *lFlag {
 		err = helper.HandleList(data)
 		if err != nil {
