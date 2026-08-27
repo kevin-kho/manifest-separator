@@ -329,8 +329,8 @@ func ReadStdIn() ([]byte, error) {
 	return res, nil
 }
 
-func ReadDir(path string) ([][]byte, error) {
-	var res [][]byte
+func ReadDir(path string) (map[string][]byte, error) {
+	res := make(map[string][]byte)
 	entries, err := os.ReadDir(path)
 	if err != nil {
 		return res, err
@@ -342,7 +342,7 @@ func ReadDir(path string) ([][]byte, error) {
 			if err != nil {
 				return res, err
 			}
-			res = append(res, data)
+			res[entry.Name()] = data
 		}
 	}
 
@@ -350,7 +350,7 @@ func ReadDir(path string) ([][]byte, error) {
 
 }
 
-func CombineFiles(files [][]byte, mode models.Mode) ([]byte, error) {
+func CombineFiles(fileMap map[string][]byte, mode models.Mode) ([]byte, error) {
 	var res []byte
 	var err error
 
@@ -358,8 +358,9 @@ func CombineFiles(files [][]byte, mode models.Mode) ([]byte, error) {
 	case models.ModeList:
 		fmt.Println("CombineFiles ModeList")
 		var items []any
-		for _, f := range files {
-			var lb models.ListByte = f
+		for name, data := range fileMap {
+			fmt.Println("Combining " + name)
+			var lb models.ListByte = data
 			lst, err := lb.UnmarshalManifest()
 			if err != nil {
 				return res, err
@@ -378,14 +379,16 @@ func CombineFiles(files [][]byte, mode models.Mode) ([]byte, error) {
 
 	case models.ModeAppSet:
 		fmt.Println("CombineFiles ModeAppSet")
-		for _, f := range files {
-			res = append(res, f...)
+		for name, data := range fileMap {
+			fmt.Println("Combining " + name)
+			res = append(res, data...)
 			res = append(res, []byte("\n")...)
 		}
 	case models.ModeDash:
 		fmt.Println("CombineFiles ModeDash")
-		for _, f := range files {
-			res = append(res, f...)
+		for name, data := range fileMap {
+			fmt.Println("Combining " + name)
+			res = append(res, data...)
 			res = append(res, []byte("\n---\n")...)
 		}
 	}

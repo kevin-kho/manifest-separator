@@ -18,7 +18,7 @@ func main() {
 	flag.Parse()
 
 	var data []byte
-	var files [][]byte
+	var fileMap map[string][]byte
 	var err error
 	var fileInfo os.FileInfo
 	var mode models.Mode
@@ -46,7 +46,7 @@ func main() {
 		switch {
 		case fileInfo.Mode().IsDir():
 			fmt.Printf("Reading dir: %v\n", *fileFlag)
-			files, err = helper.ReadDir(*fileFlag)
+			fileMap, err = helper.ReadDir(*fileFlag)
 		case fileInfo.Mode().IsRegular():
 			fmt.Printf("Reading file: %v\n", *fileFlag)
 			data, err = os.ReadFile(*fileFlag)
@@ -60,8 +60,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if len(files) > 0 {
-		data, err = helper.CombineFiles(files, mode)
+	if len(fileMap) > 0 {
+		data, err = helper.CombineFiles(fileMap, mode)
 	}
 
 	if err != nil {
