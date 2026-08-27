@@ -41,11 +41,14 @@ func SeparateManifests(data []byte) ([]models.ManifestByte, error) {
 	}
 
 	curr = bytes.TrimSpace(curr)
+	if len(curr) == 0 {
+		return res, nil
+	}
+
 	valid, err := curr.IsValidManifest()
 	if err != nil {
 		return res, err
 	}
-
 	if !valid {
 		slog.Warn("Skipping invalid manifest")
 		return res, nil
