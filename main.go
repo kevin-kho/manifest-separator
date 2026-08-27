@@ -14,7 +14,7 @@ func main() {
 
 	// Parse Flags
 	modeFlag := flag.String("mode", "dash", "specify the method used to parse manifests. Possible values: dash, list, appset. Default value: dash")
-	fileFlag := flag.String("f", "", "path to manifest file")
+	fileFlag := flag.String("f", "", "path to manifest file or directory")
 	flag.Parse()
 
 	var data []byte
