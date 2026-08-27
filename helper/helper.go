@@ -9,6 +9,7 @@ import (
 	"manifest-seperator/models"
 	"os"
 	"slices"
+	"strings"
 
 	"github.com/goccy/go-yaml"
 )
@@ -323,4 +324,45 @@ func ReadStdIn() ([]byte, error) {
 	}
 
 	return res, nil
+}
+
+func ReadDir(path string) ([][]byte, error) {
+	var res [][]byte
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return res, err
+	}
+	for _, entry := range entries {
+		if strings.HasSuffix(entry.Name(), ".yaml") || strings.HasSuffix(entry.Name(), ".yml") {
+
+			data, err := os.ReadFile(fmt.Sprintf("%v/%v", path, entry.Name()))
+			if err != nil {
+				return res, err
+			}
+			res = append(res, data)
+		}
+	}
+
+	return res, nil
+
+}
+
+func CombineFiles(files [][]byte, strategy string) ([]byte, error) {
+	var res []byte
+
+	switch strategy {
+	case "list":
+		fmt.Println("CombineFiles List")
+	case "appset":
+		fmt.Println("CombineFiles AppSet")
+	case "tripleDash":
+		fmt.Println("CombineFiles TripleDash")
+		for _, f := range files {
+			res = append(res, f...)
+			res = append(res, []byte("\n---\n")...)
+		}
+	}
+
+	return res, nil
+
 }
