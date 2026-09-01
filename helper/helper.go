@@ -112,6 +112,19 @@ func ContainsDupes(manifests []models.Manifest) bool {
 
 }
 
+func EvaluateConfig(config models.Config) error {
+	var err error
+	switch config.Mode {
+	case models.ModeDash:
+		err = HandleDashes(config)
+	case models.ModeList:
+		err = HandleList(config)
+	case models.ModeAppSet:
+		err = HandleAppSet(config)
+	}
+	return err
+}
+
 func HandleDashes(config models.Config) error {
 
 	fmt.Println("Handling manifests separated by triple dashes")

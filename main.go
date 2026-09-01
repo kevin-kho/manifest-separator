@@ -39,15 +39,7 @@ func main() {
 		log.Fatalf("Length of data is 0")
 	}
 
-	switch config.Mode {
-	case models.ModeDash:
-		err = helper.HandleDashes(config)
-	case models.ModeList:
-		err = helper.HandleList(config)
-	case models.ModeAppSet:
-		err = helper.HandleAppSet(config)
-	}
-
+	err = helper.EvaluateConfig(config)
 	if err != nil {
 		log.Fatal(err)
 	}
