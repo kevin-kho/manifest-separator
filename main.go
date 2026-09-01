@@ -4,10 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"manifest-seperator/filereader"
 	"manifest-seperator/helper"
 	"manifest-seperator/models"
-	"os"
 )
 
 func main() {
@@ -18,7 +16,6 @@ func main() {
 	flag.Parse()
 
 	var err error
-	var fileInfo os.FileInfo
 	var config models.Config
 
 	err = config.SetMode(modeFlag)
@@ -26,25 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if *fileFlag != "" {
-		fileInfo, err = os.Stat(*fileFlag)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		switch {
-		case fileInfo.Mode().IsDir():
-			fmt.Printf("Reading dir: %v\n", *fileFlag)
-			config.FileMap, err = filereader.ReadDir(*fileFlag)
-		case fileInfo.Mode().IsRegular():
-			fmt.Printf("Reading file: %v\n", *fileFlag)
-			config.Data, err = os.ReadFile(*fileFlag)
-		}
-
-	} else {
-		config.Data, err = filereader.ReadStdIn()
-	}
-
+	err = config.HandleFileFlag(fileFlag)
 	if err != nil {
 		log.Fatal(err)
 	}
