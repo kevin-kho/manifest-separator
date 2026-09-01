@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -17,22 +16,11 @@ func main() {
 	fileFlag := flag.String("f", "", "path to manifest file or directory")
 	flag.Parse()
 
-	var data []byte
-	var fileMap map[string][]byte
 	var err error
 	var fileInfo os.FileInfo
-	var mode models.Mode
+	var config models.Config
 
-	switch *modeFlag {
-	case "dash":
-		mode = models.ModeDash
-	case "list":
-		mode = models.ModeList
-	case "appset":
-		mode = models.ModeAppSet
-	default:
-		err = errors.New("unknown mode flag. Must be one of the following: dash, list, appset")
-	}
+	err = config.SetMode(modeFlag)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,39 +34,31 @@ func main() {
 		switch {
 		case fileInfo.Mode().IsDir():
 			fmt.Printf("Reading dir: %v\n", *fileFlag)
-			fileMap, err = helper.ReadDir(*fileFlag)
+			config.FileMap, err = helper.ReadDir(*fileFlag)
 		case fileInfo.Mode().IsRegular():
 			fmt.Printf("Reading file: %v\n", *fileFlag)
-			data, err = os.ReadFile(*fileFlag)
+			config.Data, err = os.ReadFile(*fileFlag)
 		}
 
 	} else {
-		data, err = helper.ReadStdIn()
+		config.Data, err = helper.ReadStdIn()
 	}
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if len(fileMap) > 0 {
-		data, err = helper.CombineFiles(fileMap, mode)
-	}
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if len(data) == 0 {
+	if len(config.Data) == 0 {
 		log.Fatalf("Length of data is 0")
 	}
 
-	switch mode {
+	switch config.Mode {
 	case models.ModeDash:
-		err = helper.HandleDashes(data)
+		err = helper.HandleDashes(config)
 	case models.ModeList:
-		err = helper.HandleList(data)
+		err = helper.HandleList(config)
 	case models.ModeAppSet:
-		err = helper.HandleAppSet(data)
+		err = helper.HandleAppSet(config)
 	}
 
 	if err != nil {

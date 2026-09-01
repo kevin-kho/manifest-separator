@@ -115,9 +115,10 @@ func ContainsDupes(manifests []models.Manifest) bool {
 
 }
 
-func HandleDashes(data []byte) error {
+func HandleDashes(config models.Config) error {
 
 	fmt.Println("Handling manifests separated by triple dashes")
+	data := config.Data
 
 	// Clear
 	err := export.RemoveAllKindDir()
@@ -159,9 +160,10 @@ func HandleDashes(data []byte) error {
 
 }
 
-func HandleList(data []byte) error {
+func HandleList(config models.Config) error {
 
 	fmt.Println("Handling manifest as a Kind: List")
+	data := config.Data
 
 	// Clear
 	err := export.RemoveAllKindDir()
@@ -208,7 +210,8 @@ func HandleList(data []byte) error {
 	return nil
 }
 
-func HandleAppSet(data []byte) error {
+func HandleAppSet(config models.Config) error {
+	data := config.Data
 	fmt.Println("Handling ArgoCD AppSet")
 
 	// Clear
