@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"manifest-seperator/helper"
+	"manifest-seperator/eval"
 	"manifest-seperator/models"
 )
 
@@ -39,7 +39,7 @@ func main() {
 		log.Fatalf("Length of data is 0")
 	}
 
-	err = helper.EvaluateConfig(config)
+	err = eval.EvaluateConfig(config)
 	if err != nil {
 		log.Fatal(err)
 	}
