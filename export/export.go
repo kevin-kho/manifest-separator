@@ -69,3 +69,62 @@ func WriteCmdFile(cmds []string, cmdType string) error {
 
 	return nil
 }
+
+func HandleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) error {
+	err := CreateKindDir(kinds)
+	if err != nil {
+		return err
+	}
+
+	var diffCmds []string
+	var getCmds []string
+	var applyCmds []string
+
+	// TODO: split into two loops?
+	for _, mb := range manifestBytes {
+
+		err := WriteManifestToFile(mb)
+		if err != nil {
+			return err
+		}
+
+		diffCmd, err := mb.GetCmd("diff")
+		if err != nil {
+			return err
+		}
+
+		diffCmds = append(diffCmds, diffCmd)
+
+		getCmd, err := mb.GetCmd("get")
+		if err != nil {
+			return err
+		}
+
+		getCmds = append(getCmds, getCmd)
+
+		applyCmd, err := mb.GetCmd("apply")
+		if err != nil {
+			return err
+		}
+
+		applyCmds = append(applyCmds, applyCmd)
+
+	}
+
+	err = WriteCmdFile(diffCmds, "diff")
+	if err != nil {
+		return err
+	}
+
+	err = WriteCmdFile(getCmds, "get")
+	if err != nil {
+		return err
+	}
+
+	err = WriteCmdFile(applyCmds, "apply")
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
