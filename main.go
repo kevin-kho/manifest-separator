@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"manifest-seperator/filereader"
 	"manifest-seperator/helper"
 	"manifest-seperator/models"
 	"os"
@@ -34,16 +35,23 @@ func main() {
 		switch {
 		case fileInfo.Mode().IsDir():
 			fmt.Printf("Reading dir: %v\n", *fileFlag)
-			config.FileMap, err = helper.ReadDir(*fileFlag)
+			config.FileMap, err = filereader.ReadDir(*fileFlag)
 		case fileInfo.Mode().IsRegular():
 			fmt.Printf("Reading file: %v\n", *fileFlag)
 			config.Data, err = os.ReadFile(*fileFlag)
 		}
 
 	} else {
-		config.Data, err = helper.ReadStdIn()
+		config.Data, err = filereader.ReadStdIn()
 	}
 
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if len(config.FileMap) > 0 {
+		err = config.CombineFiles()
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
