@@ -49,19 +49,19 @@ func WriteManifestToFile(mb models.ManifestByte) error {
 
 }
 
-func WriteCmdFile(cmds []string, cmdType string) error {
+func WriteCmdFile(cmds []string, cmdType models.Cmd) error {
 	concat := strings.Join(cmds, "\n")
-	filePaths := map[string]string{
-		"diff":  "out/diff-cmds.txt",
-		"get":   "out/get-cmds.txt",
-		"apply": "out/apply-cmds.txt",
+	filePaths := map[models.Cmd]string{
+		models.CmdDiff:  "out/diff-cmds.txt",
+		models.CmdGet:   "out/get-cmds.txt",
+		models.CmdApply: "out/apply-cmds.txt",
 	}
-	filePath := filePaths[cmdType]
-	if filePath == "" {
+	filePath, valid := filePaths[cmdType]
+	if !valid {
 		return fmt.Errorf("Unknown cmdType: %v", cmdType)
 	}
 
-	fmt.Printf("Writing kubectl %v file\n", cmdType)
+	fmt.Printf("Writing file: %v\n", filePath)
 	err := os.WriteFile(filePath, []byte(concat), 0644)
 	if err != nil {
 		return err
@@ -111,17 +111,17 @@ func HandleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) err
 
 	}
 
-	err = WriteCmdFile(diffCmds, "diff")
+	err = WriteCmdFile(diffCmds, models.CmdDiff)
 	if err != nil {
 		return err
 	}
 
-	err = WriteCmdFile(getCmds, "get")
+	err = WriteCmdFile(getCmds, models.CmdGet)
 	if err != nil {
 		return err
 	}
 
-	err = WriteCmdFile(applyCmds, "apply")
+	err = WriteCmdFile(applyCmds, models.CmdApply)
 	if err != nil {
 		return err
 	}
