@@ -23,7 +23,6 @@ func EvaluateConfig(config models.Config) error {
 func HandleDashes(config models.Config) error {
 
 	fmt.Println("Handling manifests separated by triple dashes")
-	data := config.Data
 
 	// Clear
 	err := export.RemoveAllKindDir()
@@ -32,7 +31,7 @@ func HandleDashes(config models.Config) error {
 	}
 
 	// Parse
-	manifestBytes, err := helper.SeparateManifests(data)
+	manifestBytes, err := helper.SeparateManifests(config.Data)
 	if err != nil {
 		return err
 	}
@@ -64,7 +63,6 @@ func HandleDashes(config models.Config) error {
 func HandleList(config models.Config) error {
 
 	fmt.Println("Handling manifest as a Kind: List")
-	data := config.Data
 
 	// Clear
 	err := export.RemoveAllKindDir()
@@ -73,7 +71,7 @@ func HandleList(config models.Config) error {
 	}
 
 	// Parse
-	var lb models.ListByte = data
+	var lb models.ListByte = config.Data
 	lst, err := lb.UnmarshalManifest()
 	if err != nil {
 		return err
@@ -108,7 +106,6 @@ func HandleList(config models.Config) error {
 }
 
 func HandleAppSet(config models.Config) error {
-	data := config.Data
 	fmt.Println("Handling ArgoCD AppSet")
 
 	// Clear
@@ -119,7 +116,7 @@ func HandleAppSet(config models.Config) error {
 
 	// Parse
 	// Generated AppSet comes as array of App
-	manifestBytes, err := helper.SeparateAppSet(data)
+	manifestBytes, err := helper.SeparateAppSet(config.Data)
 	if err != nil {
 		return err
 	}
