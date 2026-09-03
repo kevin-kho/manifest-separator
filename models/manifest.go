@@ -50,18 +50,26 @@ func (mb ManifestByte) UnmarshalManifest() (Manifest, error) {
 	return m, nil
 }
 
-func (mb ManifestByte) GetCmd(cmdType string) (string, error) {
+type Cmd int
+
+const (
+	CmdGet Cmd = iota
+	CmdDiff
+	CmdApply
+)
+
+func (mb ManifestByte) GetCmd(cmdType Cmd) (string, error) {
 
 	var cmd string
-	cmdString := map[string]string{
-		"get":   "kubectl get -f %v -oyaml",
-		"diff":  "kubectl diff -f %v",
-		"apply": "kubectl apply -f %v",
+	cmdString := map[Cmd]string{
+		CmdGet:   "kubectl get -f %v -oyaml",
+		CmdDiff:  "kubectl diff -f %v",
+		CmdApply: "kubectl apply -f %v",
 	}
 
-	cmdStr := cmdString[cmdType]
-	if cmdStr == "" {
-		return cmd, fmt.Errorf("Unknown cmdType: %v", cmdType)
+	cmdStr, valid := cmdString[cmdType]
+	if !valid {
+		return cmd, fmt.Errorf("Unknown cmd: %v", cmdType)
 	}
 
 	m, err := mb.UnmarshalManifest()

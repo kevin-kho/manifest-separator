@@ -88,21 +88,21 @@ func HandleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) err
 			return err
 		}
 
-		diffCmd, err := mb.GetCmd("diff")
+		diffCmd, err := mb.GetCmd(models.CmdDiff)
 		if err != nil {
 			return err
 		}
 
 		diffCmds = append(diffCmds, diffCmd)
 
-		getCmd, err := mb.GetCmd("get")
+		getCmd, err := mb.GetCmd(models.CmdGet)
 		if err != nil {
 			return err
 		}
 
 		getCmds = append(getCmds, getCmd)
 
-		applyCmd, err := mb.GetCmd("apply")
+		applyCmd, err := mb.GetCmd(models.CmdApply)
 		if err != nil {
 			return err
 		}

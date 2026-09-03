@@ -69,16 +69,21 @@ func TestIsValidManifest(t *testing.T) {
 func TestGetCmd(t *testing.T) {
 	assert := assert.New(t)
 
-	_, err := validMb.GetCmd("invalid")
+	// Go Enums lack compiler enforcement
+	_, err := validMb.GetCmd(1337)
 	assert.Error(err)
 
-	cmd, err := validMb.GetCmd("get")
+	cmd, err := validMb.GetCmd(CmdGet)
 	assert.NoError(err)
 	assert.Equal("kubectl get -f out/ServiceAccount/ServiceAccount_istio-cni_kube-system.yaml -oyaml", cmd)
 
-	cmd, err = validMb.GetCmd("diff")
+	cmd, err = validMb.GetCmd(CmdDiff)
 	assert.NoError(err)
 	assert.Equal("kubectl diff -f out/ServiceAccount/ServiceAccount_istio-cni_kube-system.yaml", cmd)
+
+	cmd, err = validMb.GetCmd(CmdApply)
+	assert.NoError(err)
+	assert.Equal("kubectl apply -f out/ServiceAccount/ServiceAccount_istio-cni_kube-system.yaml", cmd)
 
 }
 
