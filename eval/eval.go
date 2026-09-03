@@ -38,13 +38,9 @@ func HandleDashes(config models.Config) error {
 	}
 
 	// Check
-	var manifests []models.Manifest
-	for _, mb := range manifestBytes {
-		mani, err := mb.UnmarshalManifest()
-		if err != nil {
-			return err
-		}
-		manifests = append(manifests, mani)
+	manifests, err := UnmarshalManifestBytes(manifestBytes)
+	if err != nil {
+		return err
 	}
 	if helper.ContainsDupes(manifests) {
 		return fmt.Errorf("Duplicate Manifest found")
@@ -89,13 +85,9 @@ func HandleList(config models.Config) error {
 	}
 
 	// Check
-	var manifests []models.Manifest
-	for _, mb := range manifestBytes {
-		mani, err := mb.UnmarshalManifest()
-		if err != nil {
-			return err
-		}
-		manifests = append(manifests, mani)
+	manifests, err := UnmarshalManifestBytes(manifestBytes)
+	if err != nil {
+		return err
 	}
 	if helper.ContainsDupes(manifests) {
 		return fmt.Errorf("Duplicate Manifest found")
@@ -133,13 +125,9 @@ func HandleAppSet(config models.Config) error {
 	}
 
 	// Check
-	var manifests []models.Manifest
-	for _, mb := range manifestBytes {
-		mani, err := mb.UnmarshalManifest()
-		if err != nil {
-			return err
-		}
-		manifests = append(manifests, mani)
+	manifests, err := UnmarshalManifestBytes(manifestBytes)
+	if err != nil {
+		return err
 	}
 	if helper.ContainsDupes(manifests) {
 		return fmt.Errorf("Duplicate Manifest found")
@@ -157,4 +145,19 @@ func HandleAppSet(config models.Config) error {
 	}
 
 	return nil
+}
+
+func UnmarshalManifestBytes(manifestBytes []models.ManifestByte) ([]models.Manifest, error) {
+
+	var manifests []models.Manifest
+	for _, mb := range manifestBytes {
+		mani, err := mb.UnmarshalManifest()
+		if err != nil {
+			return manifests, err
+		}
+		manifests = append(manifests, mani)
+	}
+
+	return manifests, nil
+
 }
