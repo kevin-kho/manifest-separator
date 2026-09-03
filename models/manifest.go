@@ -50,14 +50,6 @@ func (mb ManifestByte) UnmarshalManifest() (Manifest, error) {
 	return m, nil
 }
 
-type Cmd int
-
-const (
-	CmdGet Cmd = iota
-	CmdDiff
-	CmdApply
-)
-
 func (mb ManifestByte) GetCmd(cmdType Cmd) (string, error) {
 
 	var cmd string
