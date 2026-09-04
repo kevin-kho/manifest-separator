@@ -5,6 +5,8 @@ import (
 	"manifest-seperator/export"
 	"manifest-seperator/helper"
 	"manifest-seperator/models"
+	"maps"
+	"slices"
 )
 
 func EvaluateConfig(config models.Config) error {
@@ -37,10 +39,12 @@ func HandleDashes(config models.Config) error {
 	}
 
 	// Check
-	manifests, err := helper.UnmarshalManifestBytes(manifestBytes)
+	// manifests, err := helper.UnmarshalManifestBytes(manifestBytes)
+	mp, err := helper.UnmarshalManifestBytesToMap(manifestBytes)
 	if err != nil {
 		return err
 	}
+	manifests := slices.Collect(maps.Keys(mp))
 	if helper.ContainsDupes(manifests) {
 		return fmt.Errorf("Duplicate Manifest found")
 	}
@@ -80,10 +84,11 @@ func HandleList(config models.Config) error {
 	}
 
 	// Check
-	manifests, err := helper.UnmarshalManifestBytes(manifestBytes)
+	mp, err := helper.UnmarshalManifestBytesToMap(manifestBytes)
 	if err != nil {
 		return err
 	}
+	manifests := slices.Collect(maps.Keys(mp))
 	if helper.ContainsDupes(manifests) {
 		return fmt.Errorf("Duplicate Manifest found")
 	}
@@ -116,10 +121,11 @@ func HandleAppSet(config models.Config) error {
 	}
 
 	// Check
-	manifests, err := helper.UnmarshalManifestBytes(manifestBytes)
+	mp, err := helper.UnmarshalManifestBytesToMap(manifestBytes)
 	if err != nil {
 		return err
 	}
+	manifests := slices.Collect(maps.Keys(mp))
 	if helper.ContainsDupes(manifests) {
 		return fmt.Errorf("Duplicate Manifest found")
 	}

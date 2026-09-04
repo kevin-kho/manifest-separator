@@ -107,17 +107,16 @@ func ContainsDupes(manifests []models.Manifest) bool {
 
 }
 
-func UnmarshalManifestBytes(manifestBytes []models.ManifestByte) ([]models.Manifest, error) {
+func UnmarshalManifestBytesToMap(manifestBytes []models.ManifestByte) (map[models.Manifest]models.ManifestByte, error) {
 
-	var manifests []models.Manifest
+	mp := make(map[models.Manifest]models.ManifestByte)
 	for _, mb := range manifestBytes {
 		mani, err := mb.UnmarshalManifest()
 		if err != nil {
-			return manifests, err
+			return mp, err
 		}
-		manifests = append(manifests, mani)
+		mp[mani] = mb
 	}
-
-	return manifests, nil
+	return mp, nil
 
 }
