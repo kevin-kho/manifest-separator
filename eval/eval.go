@@ -37,7 +37,7 @@ func HandleDashes(config models.Config) error {
 	}
 
 	// Check
-	manifests, err := UnmarshalManifestBytes(manifestBytes)
+	manifests, err := helper.UnmarshalManifestBytes(manifestBytes)
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func HandleList(config models.Config) error {
 	}
 
 	// Check
-	manifests, err := UnmarshalManifestBytes(manifestBytes)
+	manifests, err := helper.UnmarshalManifestBytes(manifestBytes)
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func HandleAppSet(config models.Config) error {
 	}
 
 	// Check
-	manifests, err := UnmarshalManifestBytes(manifestBytes)
+	manifests, err := helper.UnmarshalManifestBytes(manifestBytes)
 	if err != nil {
 		return err
 	}
@@ -133,19 +133,4 @@ func HandleAppSet(config models.Config) error {
 	}
 
 	return nil
-}
-
-func UnmarshalManifestBytes(manifestBytes []models.ManifestByte) ([]models.Manifest, error) {
-
-	var manifests []models.Manifest
-	for _, mb := range manifestBytes {
-		mani, err := mb.UnmarshalManifest()
-		if err != nil {
-			return manifests, err
-		}
-		manifests = append(manifests, mani)
-	}
-
-	return manifests, nil
-
 }
