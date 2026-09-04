@@ -45,10 +45,7 @@ func HandleDashes(config models.Config) error {
 		return fmt.Errorf("Duplicate Manifest found")
 	}
 
-	kinds, err := helper.GetKinds(manifestBytes)
-	if err != nil {
-		return err
-	}
+	kinds := helper.GetKinds(manifests)
 
 	// Write
 	err = export.HandleWrite(kinds, manifestBytes)
@@ -91,10 +88,7 @@ func HandleList(config models.Config) error {
 		return fmt.Errorf("Duplicate Manifest found")
 	}
 
-	kinds, err := helper.GetKinds(manifestBytes)
-	if err != nil {
-		return err
-	}
+	kinds := helper.GetKinds(manifests)
 
 	// Write
 	err = export.HandleWrite(kinds, manifestBytes)
@@ -130,10 +124,7 @@ func HandleAppSet(config models.Config) error {
 		return fmt.Errorf("Duplicate Manifest found")
 	}
 
-	kinds, err := helper.GetKinds(manifestBytes)
-	if err != nil {
-		return err
-	}
+	kinds := helper.GetKinds(manifests)
 
 	// Write
 	err = export.HandleWrite(kinds, manifestBytes)

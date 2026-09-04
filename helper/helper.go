@@ -79,20 +79,16 @@ func SeparateAppSet(data []byte) ([]models.ManifestByte, error) {
 
 }
 
-func GetKinds(mb []models.ManifestByte) (map[string]bool, error) {
-
+// TODO: Refactor to GroupVersionKind
+// Kind is not distinct enough
+func GetKinds(manifests []models.Manifest) map[string]bool {
 	fmt.Println("Getting set of Kinds")
-
 	res := make(map[string]bool)
-	for _, m := range mb {
-		mani, err := m.UnmarshalManifest()
-		if err != nil {
-			return res, err
-		}
+	for _, mani := range manifests {
 		res[mani.Kind] = true
 	}
 
-	return res, nil
+	return res
 
 }
 

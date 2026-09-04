@@ -78,35 +78,17 @@ var appSetData []byte = []byte(`- apiVersion: argoproj.io/v1alpha1
       syncOptions:
       - ServerSideApply=true`)
 
-var mb []models.ManifestByte = []models.ManifestByte{
-	models.ManifestByte(`---
-# Source: cni/templates/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: istio-cni
-  namespace: kube-system
-  labels:
-    app: istio-cni
-    release: istio-cni
-    istio.io/rev: default
-    install.operator.istio.io/owning-resource: unknown
-    operator.istio.io/component: "Cni"
----`),
-	models.ManifestByte(`---
-# Source: cni/templates/serviceaccount.yaml
-apiVersion: v1
-kind: Role
-metadata:
-  name: roleName
-  namespace: namespace
-  labels:
-    app: istio-cni
-    release: istio-cni
-    istio.io/rev: default
-    install.operator.istio.io/owning-resource: unknown
-    operator.istio.io/component: "Cni"
----`),
+var mb []models.Manifest = []models.Manifest{
+	{
+		ApiVersion: "",
+		Kind:       "ServiceAccount",
+		Metadata:   models.Metadata{},
+	},
+	{
+		ApiVersion: "",
+		Kind:       "Role",
+		Metadata:   models.Metadata{},
+	},
 }
 
 var duplicateManifests []models.Manifest = []models.Manifest{
@@ -150,8 +132,7 @@ var uniqueManifests []models.Manifest = []models.Manifest{
 func TestGetKinds(t *testing.T) {
 	assert := assert.New(t)
 
-	mp, err := GetKinds(mb)
-	assert.Nil(err)
+	mp := GetKinds(mb)
 	assert.Len(mp, 2)
 	assert.True(mp["Role"])
 	assert.True(mp["ServiceAccount"])
