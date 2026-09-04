@@ -107,6 +107,8 @@ func ContainsDupes(manifests []models.Manifest) bool {
 
 }
 
+// TODO: Instead of a map[models.Manifest]models.ManifestByte
+// Maybe it should be []CombinedStruct
 func UnmarshalManifestBytesToMap(manifestBytes []models.ManifestByte) (map[models.Manifest]models.ManifestByte, error) {
 
 	mp := make(map[models.Manifest]models.ManifestByte)

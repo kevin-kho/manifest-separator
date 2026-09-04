@@ -52,7 +52,7 @@ func HandleDashes(config models.Config) error {
 	kinds := helper.GetKinds(manifests)
 
 	// Write
-	err = export.HandleWrite(kinds, manifestBytes)
+	err = export.HandleWrite(kinds, mp)
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func HandleList(config models.Config) error {
 	kinds := helper.GetKinds(manifests)
 
 	// Write
-	err = export.HandleWrite(kinds, manifestBytes)
+	err = export.HandleWrite(kinds, mp)
 	if err != nil {
 		return err
 	}
@@ -133,7 +133,7 @@ func HandleAppSet(config models.Config) error {
 	kinds := helper.GetKinds(manifests)
 
 	// Write
-	err = export.HandleWrite(kinds, manifestBytes)
+	err = export.HandleWrite(kinds, mp)
 	if err != nil {
 		return err
 	}

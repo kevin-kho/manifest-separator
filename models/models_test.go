@@ -24,6 +24,15 @@ metadata:
 ---
 	`)
 
+var validM Manifest = Manifest{
+	ApiVersion: "v1",
+	Kind:       "ServiceAccount",
+	Metadata: Metadata{
+		Name:      "istio-cni",
+		Namespace: "kube-system",
+	},
+}
+
 func TestGetFileName(t *testing.T) {
 	assert := assert.New(t)
 	cm := Manifest{
@@ -70,18 +79,18 @@ func TestGetCmd(t *testing.T) {
 	assert := assert.New(t)
 
 	// Go Enums lack compiler enforcement
-	_, err := validMb.GetCmd(1337)
+	_, err := validM.GetCmd(1337)
 	assert.Error(err)
 
-	cmd, err := validMb.GetCmd(CmdGet)
+	cmd, err := validM.GetCmd(CmdGet)
 	assert.NoError(err)
 	assert.Equal("kubectl get -f out/ServiceAccount/ServiceAccount_istio-cni_kube-system.yaml -oyaml", cmd)
 
-	cmd, err = validMb.GetCmd(CmdDiff)
+	cmd, err = validM.GetCmd(CmdDiff)
 	assert.NoError(err)
 	assert.Equal("kubectl diff -f out/ServiceAccount/ServiceAccount_istio-cni_kube-system.yaml", cmd)
 
-	cmd, err = validMb.GetCmd(CmdApply)
+	cmd, err = validM.GetCmd(CmdApply)
 	assert.NoError(err)
 	assert.Equal("kubectl apply -f out/ServiceAccount/ServiceAccount_istio-cni_kube-system.yaml", cmd)
 

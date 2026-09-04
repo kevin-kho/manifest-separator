@@ -30,15 +30,14 @@ func CreateKindDir(kinds map[string]bool) error {
 	return nil
 }
 
-func WriteManifestToFile(mb models.ManifestByte) error {
+func WriteManifestToFile(m models.Manifest, mb models.ManifestByte) error {
 
 	m, err := mb.UnmarshalManifest()
 	if err != nil {
 		return err
 	}
 
-	fileName := m.GetFileName()
-	filePath := fmt.Sprintf("out/%v/%v", m.Kind, fileName)
+	filePath := fmt.Sprintf("out/%v/%v", m.Kind, m.GetFileName())
 
 	fmt.Printf("Writing file: %v\n", filePath)
 	err = os.WriteFile(filePath, mb, 0644)
@@ -70,7 +69,7 @@ func WriteCmdFile(cmds []string, cmdType models.Cmd) error {
 	return nil
 }
 
-func HandleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) error {
+func HandleWrite(kinds map[string]bool, mp map[models.Manifest]models.ManifestByte) error {
 	err := CreateKindDir(kinds)
 	if err != nil {
 		return err
@@ -81,28 +80,28 @@ func HandleWrite(kinds map[string]bool, manifestBytes []models.ManifestByte) err
 	var applyCmds []string
 
 	// TODO: split into two loops?
-	for _, mb := range manifestBytes {
+	for m, mb := range mp {
 
-		err := WriteManifestToFile(mb)
+		err := WriteManifestToFile(m, mb)
 		if err != nil {
 			return err
 		}
 
-		diffCmd, err := mb.GetCmd(models.CmdDiff)
+		diffCmd, err := m.GetCmd(models.CmdDiff)
 		if err != nil {
 			return err
 		}
 
 		diffCmds = append(diffCmds, diffCmd)
 
-		getCmd, err := mb.GetCmd(models.CmdGet)
+		getCmd, err := m.GetCmd(models.CmdGet)
 		if err != nil {
 			return err
 		}
 
 		getCmds = append(getCmds, getCmd)
 
-		applyCmd, err := mb.GetCmd(models.CmdApply)
+		applyCmd, err := m.GetCmd(models.CmdApply)
 		if err != nil {
 			return err
 		}
