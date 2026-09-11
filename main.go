@@ -1,19 +1,20 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"manifest-seperator/eval"
 	"manifest-seperator/models"
+
+	"github.com/spf13/pflag"
 )
 
 func main() {
 
 	// Parse Flags
-	modeFlag := flag.String("mode", "dash", "specify the method used to parse manifests. Possible values: dash, list, appset")
-	fileFlag := flag.String("f", "", "path to manifest file or directory")
-	flag.Parse()
+	modeFlag := pflag.StringP("mode", "m", "dash", "specify the method used to parse manifests. Possible values: dash, list, appset")
+	fileFlag := pflag.StringP("file", "f", "", "path to manifest file or directory")
+	pflag.Parse()
 
 	var err error
 	var config models.Config
