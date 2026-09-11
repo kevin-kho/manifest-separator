@@ -14,19 +14,19 @@ The resulting binary will be in the `bin` directory; add it to your PATH or move
 
 ## Modes
 
-Manifest separator has three modes to handle parsing and separating manifests.
+Manifest separator has three modes to handle parsing and separating manifests. Use the `--mode`/`-m` flag
 
-`-mode=dash` will separate YAML on triple dashes (`---`). This is the default behavior if `-mode` flag is omitted.
+`-m=dash` will separate YAML on triple dashes (`---`). This is the default behavior if `--mode` / `-m` flag is omitted.
 
-`-mode=list` will separate YAML that is in a `Kind: List`.
+`-m=list` will separate YAML that is in a `Kind: List`.
 
-`-mode=appset` will separate generated ArgoCD ApplicationSet.
+`-m=appset` will separate generated ArgoCD ApplicationSet.
 
 ## Usage
 
 The default mode is reading from Stdin.
 
-Reading from a file or directory can be specified with `-f` flag
+Reading from a file or directory can be specified with `--file`/`-f` flag
 If reading from a directory, all files must be the same type (triple dashes, list, or appset)
 
 ## Example 1
