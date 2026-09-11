@@ -33,16 +33,16 @@ If reading from a directory, all files must be the same type (triple dashes, lis
 
 `manifest-separator -f manifest.yaml`
 
-This will attempt to separate `manifest.yaml` with `-mode=dash`
+This will attempt to separate `manifest.yaml` with `--mode=dash`
 
 ## Example 2
 
 It is possible to combine manifest-separator with `kubectl get` commands like so:
 
-`kubectl get namespace -A -oyaml | manifest-separator -mode=list`
+`kubectl get namespace -A -oyaml | manifest-separator --mode=list`
 
 ## Example 3
 
 Like the above example, it's possible to combine with ArgoCD CLI commands like so:
 
-`argocd appset generate manifest.yaml | manifest-separator -mode=appset`
+`argocd appset generate manifest.yaml | manifest-separator --mode=appset`
