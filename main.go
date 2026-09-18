@@ -13,7 +13,7 @@ func main() {
 
 	// Parse Flags
 	modeFlag := pflag.StringP("mode", "m", "dash", "specify the method used to parse manifests. Possible values: dash, list, appset")
-	fileFlag := pflag.StringP("file", "f", "", "path to manifest file or directory")
+	fileFlag := pflag.StringP("file", "f", "", "path to manifest file or directory. All .yaml/.yml files in directory must be of the same type (dash, list, appset)")
 	pflag.Parse()
 
 	var err error
