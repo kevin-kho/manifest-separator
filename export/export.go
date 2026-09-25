@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"manifest-seperator/models"
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -110,16 +111,19 @@ func HandleWrite(kinds map[string]bool, mp map[models.Manifest]models.ManifestBy
 
 	}
 
+	slices.Sort(diffCmds)
 	err = WriteCmdFile(diffCmds, models.CmdDiff)
 	if err != nil {
 		return err
 	}
 
+	slices.Sort(getCmds)
 	err = WriteCmdFile(getCmds, models.CmdGet)
 	if err != nil {
 		return err
 	}
 
+	slices.Sort(applyCmds)
 	err = WriteCmdFile(applyCmds, models.CmdApply)
 	if err != nil {
 		return err
