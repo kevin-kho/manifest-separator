@@ -10,9 +10,10 @@ import (
 )
 
 type Config struct {
-	FileMap map[string][]byte
-	Data    []byte
-	Mode    Mode
+	FileMap          map[string][]byte
+	Data             []byte
+	Mode             Mode
+	GenerateCmdFiles bool
 }
 
 func (c *Config) CombineFiles() error {
