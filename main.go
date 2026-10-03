@@ -14,6 +14,7 @@ func main() {
 	// Parse Flags
 	modeFlag := pflag.StringP("mode", "m", "dash", "specify the method used to parse manifests. Possible values: dash, list, appset")
 	fileFlag := pflag.StringP("file", "f", "", "path to manifest file or directory. All .yaml/.yml files in directory must be of the same type (dash, list, appset)")
+	cmdFilesFlag := pflag.Bool("cmd-files", false, "generate kubectl apply, diff, get command files")
 	pflag.Parse()
 
 	var err error
@@ -23,6 +24,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	config.GenerateCmdFiles = *cmdFilesFlag
 
 	err = config.HandleFileFlag(fileFlag)
 	if err != nil {

@@ -70,24 +70,30 @@ func WriteCmdFile(cmds []string, cmdType models.Cmd) error {
 	return nil
 }
 
-func HandleWrite(kinds map[string]bool, mp map[models.Manifest]models.ManifestByte) error {
+func HandleWrite(kinds map[string]bool, mp map[models.Manifest]models.ManifestByte, config models.Config) error {
 	err := CreateKindDir(kinds)
 	if err != nil {
 		return err
+	}
+
+	// Write Manifests
+	for m, mb := range mp {
+		err := WriteManifestToFile(m, mb)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Write kubectl command files
+	if !config.GenerateCmdFiles {
+		return nil
 	}
 
 	var diffCmds []string
 	var getCmds []string
 	var applyCmds []string
 
-	// TODO: split into two loops?
-	for m, mb := range mp {
-
-		err := WriteManifestToFile(m, mb)
-		if err != nil {
-			return err
-		}
-
+	for m := range mp {
 		diffCmd, err := m.GetCmd(models.CmdDiff)
 		if err != nil {
 			return err
@@ -108,7 +114,6 @@ func HandleWrite(kinds map[string]bool, mp map[models.Manifest]models.ManifestBy
 		}
 
 		applyCmds = append(applyCmds, applyCmd)
-
 	}
 
 	slices.Sort(diffCmds)
